@@ -6,6 +6,8 @@ import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///container_data.sqlite3'
+app.config['SECRET_KEY'] = "random string"
+
 db = SQLAlchemy(app)
 
 class container_data(db.Model):
@@ -55,12 +57,12 @@ def add_data():
     
     if request.method == 'POST':
     
-       if not request.form['name'] or not request.form['url']:
+       if not request.form['container'] or not request.form['name'] or not request.form['url']:
     
           flash('Please enter all the fields', 'error')
        else:
     
-          data = container_data(request.form['name'], request.form['url'])     
+          data = container_data(request.form['container'], request.form['name'], request.form['url'])     
           db.session.add(data)
           db.session.commit()
           flash('Record was successfully added')
