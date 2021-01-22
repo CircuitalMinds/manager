@@ -1,14 +1,12 @@
 from flask import Flask, request, flash, url_for, redirect, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import yaml
+import requests
 
-containers = yaml.load(open('database_containers.yml'), Loader=yaml.FullLoader)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///container_data.sqlite3'
-
 db = SQLAlchemy(app)
-
 
 class container_data(db.Model):
     id = db.Column('file_id', db.Integer, primary_key = True)
@@ -31,8 +29,8 @@ class container_data(db.Model):
 def show_data():
 
     if container_data.status_updates == False:
-
-        containers = yaml.load(open('database_containers.yml'), Loader=yaml.FullLoader)
+        
+        containers = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_containers.yml').content, Loader=yaml.FullLoader)
         for cont in containers:
             for key in list(containers[cont].keys()):
                 db.session.add(container_data(cont, key, containers[cont][key]))
