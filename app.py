@@ -74,4 +74,4 @@ def add_data():
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug = True)
+    app.run("https://circuitflow.herokuapp.com/", 80)
