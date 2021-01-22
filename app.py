@@ -15,8 +15,7 @@ class container_data(db.Model):
     container = db.Column(db.String(100))
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
-    status_updates = False
-    
+
     def __init__(self, container, name, url):
        
        self.container = container
@@ -29,16 +28,6 @@ class container_data(db.Model):
     
 @app.route('/')
 def show_data():
-
-    if container_data.status_updates == False:
-        
-        containers = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_containers.yml').content, Loader=yaml.FullLoader)
-        for cont in containers:
-            for key in list(containers[cont].keys()):
-                db.session.add(container_data(cont, key, containers[cont][key]))
-        
-        container_data.status_updates = True
-    db.session.commit()
     
     return render_template('show_data.html', data = container_data.query.all())
 
@@ -71,6 +60,17 @@ def add_data():
     
     return render_template('add_data.html')
 
+@app.route('/update_data/')
+def update_data():
+        
+    containers = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_containers.yml').content, Loader=yaml.FullLoader)
+    for cont in containers:
+        for key in list(containers[cont].keys()):
+            db.session.add(container_data(cont, key, containers[cont][key]))
+    
+    db.session.commit()
+    
+    return redirect(url_for('show_data'))
 
 if __name__ == '__main__':
     db.create_all()
