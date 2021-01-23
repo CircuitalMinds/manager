@@ -44,11 +44,10 @@ def get_data():
 def get_playlist():
     
     data = container_data.query.filter(container_data.name.endswith(".mp4")).all()
-    playlist = {"name": [], "url": []}
+    playlist = {}
     
     for fdata in data:
-        playlist["name"].append(fdata.name)
-        playlist["url"].append(fdata.url)
+        playlist[fdata.name] = fdata.url
     
     return jsonify(playlist)
 
