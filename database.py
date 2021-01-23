@@ -1,10 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 
+# app manager
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///container_data.sqlite3'
 app.config['SECRET_KEY'] = "circuitalminds"
 
+# setup database
 db = SQLAlchemy(app)
 
 class container_data(db.Model):
