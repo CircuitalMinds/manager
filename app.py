@@ -6,7 +6,7 @@ import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///container_data.sqlite3'
-app.config['SECRET_KEY'] = "random string"
+app.config['SECRET_KEY'] = "circuitalminds"
 
 db = SQLAlchemy(app)
 
@@ -43,13 +43,19 @@ def get_data():
 @app.route('/get_playlist/')
 def get_playlist():
     
-    data = container_data.query.filter(container_data.name.endswith(".mp4")).all()
-    playlist = {}
+    if request.args.get('token') == app.config["SECRET_KEY"]:
+
+        data = container_data.query.filter(container_data.name.endswith(".mp4")).all()
+        playlist = {}
     
-    for fdata in data:
-        playlist[fdata.name] = fdata.url
+        for fdata in data:
+            playlist[fdata.name] = fdata.url
     
-    return jsonify(playlist)
+        return jsonify(playlist)
+    
+    else:
+        
+        return "sorry, bad token"
 
 @app.route('/add_data', methods = ['GET', 'POST'])
 def add_data():
