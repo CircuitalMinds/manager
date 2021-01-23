@@ -40,7 +40,18 @@ def get_data():
     
     return jsonify(fdata)
 
+@app.route('/get_playlist/')
+def get_playlist():
     
+    data = container_data.query.filter(container_data.name.endswith(".mp4")).all()
+    playlist = {"name": [], "url": []}
+    
+    for fdata in data:
+        playlist["name"].append(fdata.name)
+        playlist["url"].append(fdata.url)
+    
+    return jsonify(playlist)
+
 @app.route('/add_data', methods = ['GET', 'POST'])
 def add_data():
     
