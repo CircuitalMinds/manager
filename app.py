@@ -78,15 +78,21 @@ def add_data():
 
 @app.route('/update_data/')
 def update_data():
+    
+    if request.args.get('token') == app.config["SECRET_KEY"]:
         
-    containers = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_containers.yml').content, Loader=yaml.FullLoader)
-    for cont in containers:
-        for key in list(containers[cont].keys()):
-            db.session.add(container_data(cont, key, containers[cont][key]))
+        containers = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_containers.yml').content, Loader=yaml.FullLoader)
+        for cont in containers:
+            for key in list(containers[cont].keys()):
+                db.session.add(container_data(cont, key, containers[cont][key]))
     
-    db.session.commit()
+        db.session.commit()
     
-    return redirect(url_for('show_data'))
+        return redirect(url_for('show_data'))
+    
+    else:
+    
+        return "sorry, bad token"
 
 if __name__ == '__main__':
     db.create_all()
