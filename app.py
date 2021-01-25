@@ -14,7 +14,7 @@ def get_data():
 
     file_name = request.args.get('name')
     file_data = container_data.query.filter(container_data.name == file_name).first()
-    fdata = {"url": file_data.url}
+    fdata = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
     
     return jsonify(fdata)
 
@@ -40,12 +40,12 @@ def add_data():
     
     if request.method == 'POST':
     
-       if not request.form['container'] or not request.form['name'] or not request.form['url']:
+       if not request.form['container'] or not request.form['name'] or not request.form['url'] or not request.form['status']:
     
           flash('Please enter all the fields', 'error')
        else:
-    
-          data = container_data(request.form['container'], request.form['name'], request.form['url'])     
+        
+          data = container_data(request.form['container'], request.form['name'], request.form['url'], request.form['status'])     
           db.session.add(data)
           db.session.commit()
           flash('Record was successfully added')
@@ -62,7 +62,7 @@ def update_data():
         containers = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_containers.yml').content, Loader=yaml.FullLoader)
         for cont in containers:
             for key in list(containers[cont].keys()):
-                db.session.add(container_data(cont, key, containers[cont][key]))
+                db.session.add(container_data(cont, key, containers[cont][key], "available"))
     
         db.session.commit()
     
