@@ -12,12 +12,9 @@ def get_data():
     if file_name == "all":
         
         data = container_data.query.all()
-        fdata = {"container": [], "name": [], "url": [], "status": []}
+        fdata = {}
         for file_data in data:
-            fdata["container"].append(file_data.container)
-            fdata["name"].append(file_data.name)
-            fdata["url"].append(file_data.url)
-            fdata["status"].append(file_data.status)
+            fdata[file_data.id] = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
         
         return jsonify(fdata)
     
