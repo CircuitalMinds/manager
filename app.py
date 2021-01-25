@@ -96,7 +96,11 @@ def update_data():
         for cont in containers:
             for key in list(containers[cont].keys()):
                 db.session.add(container_data(cont, key, containers[cont][key], "available"))
-    
+        
+        notebooks = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_notebooks.yml').content, Loader=yaml.FullLoader)
+        for nbs in notebooks:
+            for key in list(notebooks[nbs].keys()):
+                db.session.add(container_data(nbs, key, notebooks[nbs][key], "available"))
         db.session.commit()
     
         return jsonify({"response": "Record was successfully updated"})
