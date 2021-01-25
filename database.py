@@ -14,13 +14,15 @@ class container_data(db.Model):
     container = db.Column(db.String(100))
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
+    status = db.Column(db.String(100))
     
-    def __init__(self, container, name, url):
+    def __init__(self, container, name, url, status):
        
        self.container = container
        self.name = name
        self.url = url
-           
+       self.status = status
+    
     def __repr__(self):
     
         return '<container_data %r>' % self.name 
