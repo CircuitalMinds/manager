@@ -113,7 +113,7 @@ def update_data():
         for cont in containers:
             for key in list(containers[cont].keys()):
                 db.session.add(container_data(cont, key, containers[cont][key], "available"))
-        
+        db.session.commit()
         notebooks = yaml.load(requests.get('https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/database_notebooks.yml').content, Loader=yaml.FullLoader)
         for nbs in notebooks:
             for key in list(notebooks[nbs].keys()):
