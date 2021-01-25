@@ -32,13 +32,18 @@ def get_data():
         
 @app.route('/delete_data/')
 def delete_data():
-
-    file_name = request.args.get('name')
-    file_data = container_data.query.filter(container_data.name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
-    db.session.delete(file_data)
-    db.session.commit()
     
-    return 'Record was successfully deleted'
+    if request.args.get('token') == app.config["SECRET_KEY"]:
+        file_name = request.args.get('name')
+        file_data = container_data.query.filter(container_data.name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
+        db.session.delete(file_data)
+        db.session.commit()
+
+        return 'Record was successfully deleted'
+    
+    else:
+        
+        return "sorry, bad token"
 
 @app.route('/get_playlist/')
 def get_playlist():
@@ -94,7 +99,7 @@ def update_data():
     
         db.session.commit()
     
-        return redirect(url_for('show_data'))
+        return jsonify({"response": "Record was successfully updated"})
     
     else:
     
