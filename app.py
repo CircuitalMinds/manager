@@ -4,11 +4,6 @@ import requests
 from database import container_data, app, db
 
 
-@app.route('/')
-def show_data():
-    
-    return render_template('show_data.html', data = container_data.query.all())
-
 @app.route('/get_data/')
 def get_data():
 
@@ -35,24 +30,30 @@ def get_playlist():
         
         return "sorry, bad token"
 
-@app.route('/add_data', methods = ['GET', 'POST'])
+@app.route('/add_data/', methods = ['GET', 'POST'])
 def add_data():
     
     if request.method == 'POST':
     
        if not request.form['container'] or not request.form['name'] or not request.form['url'] or not request.form['status']:
     
-          flash('Please enter all the fields', 'error')
+          jsonify({"response": "Error, Please enter all the fields"})
        else:
-        
-          data = container_data(request.form['container'], request.form['name'], request.form['url'], request.form['status'])     
+          fdata = {"container": request.form['container'], "name": request.form['name'], "url": request.form['url'], "status": request.form['status']} 
+          data = container_data(fdata['container'], fdata['name'], fdata['url'], fdata['status'])     
           db.session.add(data)
           db.session.commit()
-          flash('Record was successfully added')
+          
+          return jsonify({"response": "Record was successfully added"})
     
-          return redirect(url_for('show_data'))
+    else:
     
-    return render_template('add_data.html')
+        fdata = {"container": request.args.get('container'), "name": request.args.get('name'), "url": request.args.get('url'), "status": request.args.get('status')} 
+        data = container_data(fdata['container'], fdata['name'], fdata['url'], fdata['status'])
+        db.session.add(data)
+        db.session.commit()
+        
+        return jsonify({"response": "Record was successfully added"})
 
 @app.route('/update_data/')
 def update_data():
