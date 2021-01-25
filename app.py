@@ -6,25 +6,30 @@ from database import container_data, app, db
 
 @app.route('/get_data/')
 def get_data():
+    if request.args.get('token') == app.config["SECRET_KEY"]:
+        
+        file_name = request.args.get('name')
 
-    file_name = request.args.get('name')
-    
-    if file_name == "all":
-        
-        data = container_data.query.all()
-        fdata = {}
-        for file_data in data:
-            fdata[file_data.id] = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
-        
-        return jsonify(fdata)
-    
+        if file_name == "all":
+
+            data = container_data.query.all()
+            fdata = {}
+            for file_data in data:
+                fdata[file_data.id] = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
+
+            return jsonify(fdata)
+
+        else:
+
+            file_data = container_data.query.filter(container_data.name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
+            fdata = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
+
+            return jsonify(fdata)
+
     else:
         
-        file_data = container_data.query.filter(container_data.name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
-        fdata = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
-    
-        return jsonify(fdata)
-
+        return "sorry, bad token"
+        
 @app.route('/delete_data/')
 def delete_data():
 
