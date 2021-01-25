@@ -8,10 +8,35 @@ from database import container_data, app, db
 def get_data():
 
     file_name = request.args.get('name')
-    file_data = container_data.query.filter(container_data.name == file_name).first()
-    fdata = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
     
-    return jsonify(fdata)
+    if file_name == "all":
+        
+        data = container_data.query.all()
+        fdata = {"container": [], "name": [], "url": [], "status": []}
+        for file_data in data:
+            fdata["container"].append(file_data.container)
+            fdata["name"].append(file_data.name)
+            fdata["url"].append(file_data.url)
+            fdata["status"].append(file_data.status)
+        
+        return jsonify(fdata)
+    
+    else:
+        
+        file_data = container_data.query.filter(container_data.name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
+        fdata = {"container": file_data.container, "name": file_data.name, "url": file_data.url, "status": file_data.status}
+    
+        return jsonify(fdata)
+
+@app.route('/delete_data/')
+def delete_data():
+
+    file_name = request.args.get('name')
+    file_data = container_data.query.filter(container_data.name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
+    db.session.delete(file_data)
+    db.session.commit()
+    
+    return 'Record was successfully deleted'
 
 @app.route('/get_playlist/')
 def get_playlist():
