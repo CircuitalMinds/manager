@@ -62,6 +62,23 @@ def get_playlist():
         
         return "sorry, bad token"
 
+@app.route('/get_notebooks/')
+def get_notebooks():
+    
+    if request.args.get('token') == app.config["SECRET_KEY"]:
+
+        data = container_data.query.filter(container_data.name.endswith(".ipynb")).all()
+        notebooks = {}
+    
+        for fdata in data:
+            notebooks[fdata.name] = fdata.url
+    
+        return jsonify(notebooks)
+    
+    else:
+        
+        return "sorry, bad token"
+    
 @app.route('/add_data/', methods = ['GET', 'POST'])
 def add_data():
     
