@@ -10,7 +10,7 @@ books_data = { "containers": containers_data, "notebooks": notebooks_data, "repo
 @circuitflow.route('/give_job/<new_job>')
 def worker(new_job):
     
-    if new_job != None:
+    if new_job != "view":
         data_job = { "jobs": new_job, "status_workers": "waiting" }
         db.session.add(workers(data_job))
         db.session.commit()
