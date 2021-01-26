@@ -2,28 +2,81 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 
 
-# app manager
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///container_data.sqlite3'
-app.config['SECRET_KEY'] = "circuitalminds"
+circuitflow = Flask(__name__)
+circuitflow.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
+circuitflow.config['SECRET_KEY'] = "circuitalminds"
 
-# setup database
-db = SQLAlchemy(app)
+db = SQLAlchemy(circuitflow)
 
-class container_data(db.Model):
+class containers_data(db.Model):
     id = db.Column('file_id', db.Integer, primary_key = True)
-    container = db.Column(db.String(100))
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
-    status = db.Column(db.String(100))
+    args = { "attrs": ["name", "url"], 
+    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/containers.yml" }
     
-    def __init__(self, container, name, url, status):
-       
-       self.container = container
-       self.name = name
-       self.url = url
-       self.status = status
-    
+    def __init__(self, data):       
+       self.name = data["name"]
+       self.url = data["url"]
+      
     def __repr__(self):
     
-        return '<container_data %r>' % self.name 
+        return '<containers_data %r>' % self.name
+
+class notebooks_data(db.Model):
+    id = db.Column('notebook_id', db.Integer, primary_key = True)
+    name = db.Column(db.String(100))
+    url = db.Column(db.String(100))
+    args = { "attrs": ["name", "url"], 
+    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/notebooks.yml" }
+    
+    def __init__(self, data):
+       self.name = data["name"]
+       self.url = data["url"]
+           
+    def __repr__(self):
+    
+        return '<notebooks_data %r>' % self.name        
+
+class repos_data(db.Model):
+    id = db.Column('repo_id', db.Integer, primary_key = True)
+    name = db.Column(db.String(100))
+    url = db.Column(db.String(100))
+    args = { "attrs": ["name", "url"], 
+    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/repositories.yml" }
+    
+    def __init__(self, data):
+       self.name = data["name"]
+       self.url = data["url"]
+           
+    def __repr__(self):
+    
+        return '<repos_data %r>' % self.name
+        
+class users_data(db.Model):
+    id = db.Column('user_id', db.Integer, primary_key = True)
+    username = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+    args = { "attrs": ["username", "email"] }
+    
+    def __init__(self, data):
+       self.username = data["username"]
+       self.email = data["email"]
+           
+    def __repr__(self):
+    
+        return '<users_data %r>' % self.username 
+        
+class workers(db.Model):
+    id = db.Column('user_id', db.Integer, primary_key = True)
+    jobs = db.Column(db.String(100))
+    status_workers = db.Column(db.String(100))
+    args = { "attrs": ["jobs", "status_workers"] }
+    
+    def __init__(self, data):
+       self.jobs = data["jobs"]
+       self.status_workers = data["status_workers"]
+           
+    def __repr__(self):
+    
+        return '<users_data %r>' % self.status_workers
