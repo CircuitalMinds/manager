@@ -7,7 +7,7 @@ from tools import data_files
 
 books_data = { "containers": containers_data, "notebooks": notebooks_data, "repos": repos_data }
 
-@circuitflow.route('/give_job')
+@circuitflow.route('/give_job/<new_job>')
 def worker(new_job):
     
     if new_job != None:
