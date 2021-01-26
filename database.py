@@ -70,12 +70,12 @@ class users_data(db.Model):
 class workers(db.Model):
     id = db.Column('worker_id', db.Integer, primary_key = True)
     jobs = db.Column(db.String(100))
-    status_workers = db.Column(db.String(100))
-    args = { "attrs": ["jobs", "status_workers"] }
+    status = db.Column(db.String(100))
+    args = { "attrs": ["jobs", "status"] }
     
     def __init__(self, data):
        self.jobs = data["jobs"]
-       self.status_workers = data["status_workers"]
+       self.status = data["status"]
            
     def __repr__(self):
     
