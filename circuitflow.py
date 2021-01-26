@@ -20,7 +20,7 @@ def worker(new_job):
         fdata = {}
         for data_job in data_jobs:
             fdata[data_job.id] = { "jobs": data_job.jobs, "status": data_job.status }
-        return jsonify(fdata)         
+        return jsonify(fdata)       
     
 @circuitflow.route('/get_data/<book>')
 def get_data(book):
