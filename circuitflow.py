@@ -11,7 +11,7 @@ books_data = { "containers": containers_data, "notebooks": notebooks_data, "repo
 def worker(new_job):
     
     if new_job != "view":
-        data_job = { "jobs": new_job, "status_workers": "waiting" }
+        data_job = { "jobs": new_job, "status": "waiting" }
         db.session.add(workers(data_job))
         db.session.commit()
         return jsonify({"response": "Record was successfully added"})
@@ -19,8 +19,8 @@ def worker(new_job):
         data_jobs = workers.query.all()
         fdata = {}
         for data_job in data_jobs:
-            fdata[data_job.id] = { "jobs": data_job.jobs, "status_workers": data_job.status_workers }
-        return jsonify({"response": "Record was successfully added"})         
+            fdata[data_job.id] = { "jobs": data_job.jobs, "status": data_job.status }
+        return jsonify(fdata)         
     
 @circuitflow.route('/get_data/<book>')
 def get_data(book):
