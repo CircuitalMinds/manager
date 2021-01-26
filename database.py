@@ -73,9 +73,9 @@ class workers(db.Model):
     status = db.Column(db.String(100))
     args = { "attrs": ["jobs", "status"] }
     
-    def __init__(self, data):
-       self.jobs = data["jobs"]
-       self.status = data["status"]
+    def __init__(self, jobs, status):
+       self.jobs = jobs
+       self.status = status
            
     def __repr__(self):
     
