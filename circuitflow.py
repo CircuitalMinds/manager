@@ -16,11 +16,8 @@ def get_data(book):
         if file_name == "playlist":
             data = books_data[book].query.filter(books_data[book].name.endswith(".mp4")).all()
             for file_data in data:
-                fdata[file_data.id] = {}
-                for key in books_data[book].args["attrs"]:
-                    fdata[file_data.id][key] = file_data.__dict__[key]     
+                fdata[file_data.name] = file_data.url     
             return jsonify(fdata)
-        
         elif file_name == None:
             data = books_data[book].query.all()
             for file_data in data:
