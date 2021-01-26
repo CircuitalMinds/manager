@@ -10,7 +10,7 @@ books_data = { "containers": containers_data, "notebooks": notebooks_data, "repo
 @circuitflow.route('/get_data/<book>')
 def get_data(book):
 
-    if request.args.get('token') == app.config['SECRET_KEY']:
+    if request.args.get('token') == circuitflow.config['SECRET_KEY']:
         file_name = request.args.get("name")
         fdata = {}
         if file_name == None:
@@ -32,7 +32,7 @@ def get_data(book):
 @circuitflow.route('/update_data/<book>')
 def update_data(book):
     
-    if request.args.get('token') == app.config['SECRET_KEY']:
+    if request.args.get('token') == circuitflow.config['SECRET_KEY']:
         dict_data = data_files(books_data[book].args["path_data"])
         refs_data = [ refs.name for refs in books_data[book].query.all() ]
         for file_data in list(dict_data.keys()):
@@ -46,7 +46,7 @@ def update_data(book):
 @circuitflow.route('/delete_data/<book>')
 def delete_data(book):
   
-    if request.args.get('token') == app.config["SECRET_KEY"]:
+    if request.args.get('token') == circuitflow.config["SECRET_KEY"]:
         file_name = request.args.get('name')
         file_data = books_data[book].query.filter(books_data[book].name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
         db.session.delete(file_data)
