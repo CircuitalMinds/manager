@@ -1,12 +1,27 @@
 from flask import request, flash, url_for, redirect, render_template, jsonify
 import yaml
 import requests
-from database import containers_data, notebooks_data, repos_data, circuitflow, db
+from database import workers, containers_data, notebooks_data, repos_data, circuitflow, db
 from tools import data_files
 
 
 books_data = { "containers": containers_data, "notebooks": notebooks_data, "repos": repos_data }
 
+@circuitflow.route('/give_job')
+def worker(new_job):
+    
+    if new_job != None:
+        data_job = { "job": new_job, "status_workers": "waiting" }
+        db.session.add(workers(data_job))
+        db.session.commit()
+        return jsonify({"response": "Record was successfully added"})
+    else:
+        data_jobs = workers.query.all()
+        fdata = {}
+        for data_job in data_jobs:
+            fdata[data_job.id] = { "job": data_job.job, "status_workers": data_job.status_workers }
+        return jsonify({"response": "Record was successfully added"})         
+    
 @circuitflow.route('/get_data/<book>')
 def get_data(book):
 
