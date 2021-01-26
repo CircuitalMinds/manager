@@ -11,8 +11,8 @@ books_data = { "containers": containers_data, "notebooks": notebooks_data, "repo
 def worker(new_job):
     
     if new_job != "view":
-        data_job = { "jobs": new_job, "status": "waiting" }
-        db.session.add(workers(data_job))
+        data = workers(new_job, "waiting")
+        db.session.add(data)
         db.session.commit()
         return jsonify({"response": "Record was successfully added"})
     else:
