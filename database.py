@@ -68,7 +68,7 @@ class users_data(db.Model):
         return '<users_data %r>' % self.username 
         
 class workers(db.Model):
-    id = db.Column('user_id', db.Integer, primary_key = True)
+    id = db.Column('worker_id', db.Integer, primary_key = True)
     jobs = db.Column(db.String(100))
     status_workers = db.Column(db.String(100))
     args = { "attrs": ["jobs", "status_workers"] }
@@ -79,4 +79,4 @@ class workers(db.Model):
            
     def __repr__(self):
     
-        return '<users_data %r>' % self.status_workers
+        return '<workers %r>' % self.jobs
