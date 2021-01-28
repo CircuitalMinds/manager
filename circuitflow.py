@@ -107,4 +107,4 @@ def add_data(book):
 
 if __name__ == '__main__':
     db.create_all()
-    circuitflow.run("https://circuitflow.herokuapp.com/", 80)
+    circuitflow.run("127.0.0.1", 4000)
