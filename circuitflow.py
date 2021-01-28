@@ -7,29 +7,32 @@ from tools import data_files
 
 books_data = { "containers": containers_data, "notebooks": notebooks_data, "repos": repos_data }
 
-@circuitflow.route('/give_job/<option>')
-def worker(option):
+@circuitflow.route('/workers')
+def worker():
+    
+    option = request.args.get('option')
+    worker = request.args.get('worker')
+    job = request.args.get('job')
+    argument = request.args.get('argument')
     
     if option == "view":
-        data_jobs = workers.query.all()
+        workers_data = workers.query.all()
         fdata = {}
-        for data_job in data_jobs:
-            fdata[data_job.id] = { "jobs": data_job.jobs, "status": data_job.status }
+        for data in workers_data:
+            fdata[data.id] = {"worker": data.worker, "job": data.job, "argument": data.argument}
         
         return jsonify(fdata)
     
-    elif option == "delete":    
-        jobs = request.args.get('jobs')
-        data = workers.query.filter(workers.jobs == jobs).first_or_404(description='There is no data with {}'.format(jobs))
-        db.session.delete(data)
+    elif option == "delete":
+        worker_data = workers.query.filter(workers.worker == worker).first_or_404(description='There is no data with {}'.format(worker))
+        db.session.delete(worker_data)
         db.session.commit()
         
-        return 'Record was successfully deleted'  
+        return jsonify({"response": "Record was successfully deleted'})  
     
     else:
-        new_job = option
-        data = workers(new_job, "waiting")
-        db.session.add(data)
+        worker_data = workers(worker, job, argument)
+        db.session.add(worker_data)
         db.session.commit()
         
         return jsonify({"response": "Record was successfully added"})
