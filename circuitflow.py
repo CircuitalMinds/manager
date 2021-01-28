@@ -7,20 +7,32 @@ from tools import data_files
 
 books_data = { "containers": containers_data, "notebooks": notebooks_data, "repos": repos_data }
 
-@circuitflow.route('/give_job/<new_job>')
-def worker(new_job):
+@circuitflow.route('/give_job/<option>')
+def worker(option):
     
-    if new_job != "view":
-        data = workers(new_job, "waiting")
-        db.session.add(data)
-        db.session.commit()
-        return jsonify({"response": "Record was successfully added"})
-    else:
+    if option == "view":
         data_jobs = workers.query.all()
         fdata = {}
         for data_job in data_jobs:
             fdata[data_job.id] = { "jobs": data_job.jobs, "status": data_job.status }
-        return jsonify(fdata)       
+        
+        return jsonify(fdata)
+    
+    elif option == "delete":    
+        jobs = request.args.get('jobs')
+        data = workers.query.filter(workers.jobs == jobs).first_or_404(description='There is no data with {}'.format(jobs))
+        db.session.delete(data)
+        db.session.commit()
+        
+        return 'Record was successfully deleted'  
+    
+    else:
+        new_job = option
+        data = workers(new_job, "waiting")
+        db.session.add(data)
+        db.session.commit()
+        
+        return jsonify({"response": "Record was successfully added"})
     
 @circuitflow.route('/get_data/<book>')
 def get_data(book):
