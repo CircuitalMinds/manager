@@ -28,7 +28,7 @@ def worker():
         db.session.delete(worker_data)
         db.session.commit()
         
-        return jsonify({"response": "Record was successfully deleted'})  
+        return jsonify({"response": "Record was successfully deleted"})  
     
     else:
         worker_data = workers(worker, job, argument)
