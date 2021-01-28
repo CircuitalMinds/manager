@@ -69,14 +69,16 @@ class users_data(db.Model):
         
 class workers(db.Model):
     id = db.Column('worker_id', db.Integer, primary_key = True)
-    jobs = db.Column(db.String(100))
-    status = db.Column(db.String(100))
-    args = { "attrs": ["jobs", "status"] }
+    worker = db.Column(db.String(100))
+    job = db.Column(db.String(100))
+    argument = db.Column(db.String(100))
+    args = { "attrs": ["worker", "job", "argument"] }
     
-    def __init__(self, jobs, status):
-       self.jobs = jobs
-       self.status = status
+    def __init__(self, worker, job, argument):
+       self.worker = worker
+       self.job = job
+       self.argument = argument
            
     def __repr__(self):
     
-        return '<workers %r>' % self.jobs
+        return '<workers %r>' % self.worker
