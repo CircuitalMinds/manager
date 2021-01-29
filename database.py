@@ -28,7 +28,7 @@ class notebooks_data(db.Model):
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
     args = { "attrs": ["name", "url"], 
-    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/notebooks.yml" }
+    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/" }
     
     def __init__(self, data):
        self.name = data["name"]
@@ -43,7 +43,7 @@ class repos_data(db.Model):
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
     args = { "attrs": ["name", "url"], 
-    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/repositories.yml" }
+    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/" }
     
     def __init__(self, data):
        self.name = data["name"]
