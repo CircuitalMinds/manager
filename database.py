@@ -49,11 +49,12 @@ class repos_data(db.Model):
     id = db.Column('repo_id', db.Integer, primary_key = True)
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
-    args = { "attrs": ["name", "url"],
-    "path_data": {
-        "container_" + str(j): circuitflow.config["DATABASE_PATH"] + "container_" + str(j) + ".yml" for j in range(1, 11)
-                  }
-            }
+    args = {
+        "attrs": ["name", "url"],
+        "path_data": {
+            "container_" + str(j): circuitflow.config["DATABASE_PATH"] + "container_" + str(j) + ".yml" for j in range(1, 11)
+        }
+    }
     
     def __init__(self, data):
        self.name = data["name"]
