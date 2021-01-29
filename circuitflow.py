@@ -44,7 +44,7 @@ def get_data(book):
         file_name = request.args.get("name")
         fdata = {}
         if file_name == "playlist":
-            data = books_data[book].query.filter(books_data[book].name.endswith(tuple(["mkv", "webm", "mp4"]))).all()
+            data = books_data[book].query.filter(books_data[book].name.endswith("mp4")).all()
             for file_data in data:
                 fdata[file_data.name] = file_data.url     
             return jsonify(fdata)
