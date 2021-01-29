@@ -5,6 +5,7 @@ from flask import Flask
 circuitflow = Flask(__name__)
 circuitflow.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
 circuitflow.config['SECRET_KEY'] = "circuitalminds"
+circuitflow.config["DATABASE_PATH"] = "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/"
 
 db = SQLAlchemy(circuitflow)
 
@@ -13,7 +14,8 @@ class containers_data(db.Model):
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
     args = { "attrs": ["name", "url"], 
-    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/containers.yml" }
+    
+            "path_data": [] }
     
     def __init__(self, data):       
        self.name = data["name"]
@@ -27,8 +29,13 @@ class notebooks_data(db.Model):
     id = db.Column('notebook_id', db.Integer, primary_key = True)
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
-    args = { "attrs": ["name", "url"], 
-    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/" }
+    args = {
+        "attrs": ["name", "url"],
+        "path_data": {
+            "engineering-basic": circuitflow.config["DATABASE_PATH"] + "engineering-basic.yml", 
+            "data_analysis": circuitflow.config["DATABASE_PATH"] + "data_analysis.yml"
+        }
+    }
     
     def __init__(self, data):
        self.name = data["name"]
@@ -42,8 +49,11 @@ class repos_data(db.Model):
     id = db.Column('repo_id', db.Integer, primary_key = True)
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
-    args = { "attrs": ["name", "url"], 
-    "path_data": "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/" }
+    args = { "attrs": ["name", "url"],
+    "path_data": {
+        "container_" + str(j): circuitflow.config["DATABASE_PATH"] + "container_" + str(j) + ".yml" for j in range(1, 11)
+                  }
+            }
     
     def __init__(self, data):
        self.name = data["name"]
