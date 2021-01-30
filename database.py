@@ -21,6 +21,11 @@ class containers_data(db.Model):
             "container_" + str(j): yaml.load(requests.get(circuitflow.config["DATABASE_PATH"] + "container_" + str(j) + ".yml").content, Loader=yaml.FullLoader) for j in range(1, 11)
         }
     }
+    args["data"].update(
+        {
+            "yt_playlist_" + str(j): yaml.load(requests.get(circuitflow.config["DATABASE_PATH"] + "yt_playlist_" + str(j) + ".yml").content, Loader=yaml.FullLoader) for j in range(1, 4)
+        }
+    )
     
     def __init__(self, data):       
        self.name = data["name"]
@@ -60,7 +65,6 @@ class repos_data(db.Model):
         key: circuitflow.config["REPOS"][key] for key in list(circuitflow.config["REPOS"].keys())
         }
     }
-    
     
     def __init__(self, data):
        self.name = data["name"]
