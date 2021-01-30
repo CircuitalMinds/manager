@@ -23,7 +23,7 @@ class containers_data(db.Model):
     }
     args["data"].update(
         {
-            "yt_playlist_" + str(j): yaml.load(requests.get(circuitflow.config["DATABASE_PATH"] + "yt_playlist_" + str(j) + ".yml").content, Loader=yaml.FullLoader) for j in range(1, 4)
+            "yt_playlist_" + str(j): yaml.load(requests.get(circuitflow.config["DATABASE_PATH"] + "yt_playlist_" + str(j) + ".yml").content, Loader=yaml.FullLoader) for j in range(1, 5)
         }
     )
     
