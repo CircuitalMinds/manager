@@ -1,4 +1,6 @@
 import os
+import requests
+
 
 os.environ["environment"] = "environment"
 

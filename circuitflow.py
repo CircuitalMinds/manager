@@ -4,107 +4,169 @@ import requests
 from database import workers, containers_data, notebooks_data, repos_data, circuitflow, db
 from tools import data_files
 
+books_data = {"containers": containers_data, "notebooks": notebooks_data, "repos": repos_data}
+_config = yaml.load(open("./_config.yml"), Loader=yaml.FullLoader)
 
-books_data = { "containers": containers_data, "notebooks": notebooks_data, "repos": repos_data }
+SETTINGS = _config["SETTINGS"]
+HOST = SETTINGS["HOST"]
+PORT = SETTINGS["PORT"]
+DEBUG = SETTINGS["DEBUG"]
+
 
 @circuitflow.route('/workers')
 def worker():
-    
-    option = request.args.get('option')
     worker = request.args.get('worker')
     job = request.args.get('job')
     argument = request.args.get('argument')
-    
-    if option == "view":
-        workers_data = workers.query.all()
-        fdata = {}
-        for data in workers_data:
-            fdata[data.id] = {"worker": data.worker, "job": data.job, "argument": data.argument}
-        
-        return jsonify(fdata)
-    
-    elif option == "delete":
-        worker_data = workers.query.filter(workers.worker == worker).first_or_404(description='There is no data with {}'.format(worker))
-        db.session.delete(worker_data)
-        db.session.commit()
-        
-        return jsonify({"response": "Record was successfully deleted"})  
-    
-    else:
-        worker_data = workers(worker, job, argument)
-        db.session.add(worker_data)
-        db.session.commit()
-        
-        return jsonify({"response": "Record was successfully added"})
-    
-@circuitflow.route('/get_data/<book>')
-def get_data(book):
+    status = request.args.get('status')
+    option = request.args.get('query')
 
     if request.args.get('token') == circuitflow.config['SECRET_KEY']:
-        file_name = request.args.get("name")
-        fdata = {}
-        if file_name == "playlist":
-            data = books_data[book].query.filter(books_data[book].name.endswith("mp4")).all()
-            for file_data in data:
-                fdata[file_data.name] = file_data.url     
+
+        if option is None:
+            workers_data = workers.query.all()
+            fdata = {}
+            for data in workers_data:
+                fdata[data.id] = {"worker": data.worker, "job": data.job, "argument": data.argument, "status": status}
             return jsonify(fdata)
-        elif file_name == None:
-            data = books_data[book].query.all()
-            for file_data in data:
-                fdata[file_data.id] = {}
-                for key in books_data[book].args["attrs"]:
-                    fdata[file_data.id][key] = file_data.__dict__[key]     
-            return jsonify(fdata)
+        elif option == "update":
+            workers.query.filter(workers.worker == worker).first_or_404(
+                    description='There is no data with {}'.format(worker)
+                )
+            workers.query.filter(workers.worker == worker).update({"worker": data.worker, "job": data.job, "argument": data.argument, "status": status})    
+            db.session.commit()
+            return jsonify({"request": "data updated"})
         else:
-            file_data = books_data[book].query.filter(books_data[book].name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
-            fdata[file_data.id] = {}
-            for key in books_data[book].args["attrs"]:
-                fdata[file_data.id][key] = file_data.__dict__[key]
-            return jsonify(fdata)
+            if option == "add":
+                worker_data = workers.query.filter(workers.worker == worker).first_or_404(
+                    description='There is no data with {}'.format(worker)
+                )
+                db.session.delete(worker_data)
+                db.session.commit()
+                return jsonify({"response": "data added"})
+            elif option == "delete":
+                worker_data = workers(worker, job, argument, status)
+                db.session.add(worker_data)
+                db.session.commit()
+                return jsonify({"response": "data deleted"})
+            else:
+
+                return jsonify({"response": "bad option"})
+
     else:
+
         return "sorry, bad token"
-        
-@circuitflow.route('/update_data/<book>')
-def update_data(book):
-    
+
+
+@circuitflow.route('/books')
+def data():
     if request.args.get('token') == circuitflow.config['SECRET_KEY']:
-        dict_data = data_files(books_data[book].args["path_data"])
-        refs_data = [ refs.name for refs in books_data[book].query.all() ]
-        for file_data in list(dict_data.keys()):
-            if not file_data in refs_data:
-                db.session.add(books_data[book]({"name": file_data, "url": dict_data[file_data]}))
-        db.session.commit()
-        return jsonify({"response": "Record was successfully updated"})
+
+        book = request.args.get('book')
+        name = request.args.get('name')
+        data = books_data[book].args["data"][name]
+
+        if request.args.get('register'):
+            refs_data = [refs.name for refs in books_data[book].query.all()]
+            if refs_data:
+                for key in list(data.keys()):
+                    db.session.add(books_data[book]({"name": key, "url": data[key]}))
+                db.session.commit()
+            else:
+                for key in list(data.keys()):
+                    if not key in refs_data:
+                        db.session.add(books_data[book]({"name": key, "url": data[key]}))
+                db.session.commit()
+            return jsonify({"response": "success"})
+        else:
+            return jsonify(data)
+    else:
+
+        return "sorry, bad token"
+
+
+@circuitflow.route('/get_data')
+def get_data():
+    if request.args.get('token') == circuitflow.config['SECRET_KEY']:
+        data = request.args.get('data')
+        name = request.args.get('name')
+        option = request.args.get("option")
+        data_object = books_data[data]
+        data_dict = {}
+        if option == "playlist":
+            playlist = data_object.query.filter(data_object.name.endswith("mp4")).all()
+            for song in playlist:
+                data_dict[song.name] = song.url
+            return jsonify(data_dict)
+        elif name is None and option is None:
+            data_files = data_object.query.all()
+            for fdata in data_files:
+                data_dict[fdata.id] = {}
+                for key in data_object.args["attrs"]:
+                    data_dict[fdata.id][key] = fdata.__dict__[key]
+            return jsonify(data_dict)
+        else:
+            fdata = data_object.query.filter(data_object.name == name).first_or_404(
+                description='There is no data with {}'.format(name)
+            )
+            data_dict[fdata.id] = {}
+            for key in data_object.args["attrs"]:
+                data_dict[fdata.id][key] = fdata.__dict__[key]
+        return jsonify(data_dict)
+
     else:
         return "sorry, bad token"
-                     
-@circuitflow.route('/delete_data/<book>')
-def delete_data(book):
-  
+
+@circuitflow.route('/delete_data')
+def delete_data():
     if request.args.get('token') == circuitflow.config["SECRET_KEY"]:
-        file_name = request.args.get('name')
-        file_data = books_data[book].query.filter(books_data[book].name == file_name).first_or_404(description='There is no data with {}'.format(file_name))
-        db.session.delete(file_data)
+        name = request.args.get('name')
+        data = request.args.get('data')
+        data_object = books_data[data]
+        data_file = data_object.query.filter(data_object.name == name).first_or_404(
+            description='There is no data with {}'.format(name)
+        )
+        db.session.delete(data_file)
         db.session.commit()
-        return 'Record was successfully deleted'  
+        return jsonify({"response": "success"})
     else:
         return "sorry, bad token"
-    
-@circuitflow.route('/add_data/<book>', methods = ['GET', 'POST'])
-def add_data(book):
-    
-    if request.method == 'POST':
-       if not request.form['name'] or not request.form['url']:
-          return jsonify({"response": "Error, Please enter all the fields"})
-       else:
-          db.session.add(books_data[book]({ "name": request.form['name'], "url": request.form['url'] }))
-          db.session.commit()
-          return jsonify({"response": "Record was successfully added"})
-    else:
-        db.session.add(books_data[book]({ "name": request.args.get('name'), "url": request.args.get('url') }))
+
+
+@circuitflow.route('/add_data')
+def add_data():
+    if request.args.get('token') == circuitflow.config["SECRET_KEY"]:
+        name = request.args.get('name')
+        argument = request.args.get('argument')
+        data = request.args.get('data')
+        data_object = books_data[data]
+        attributes = data_object.args["attrs"]
+        db.session.add(data_object({attributes[0]: name, attributes[1]: argument}))
         db.session.commit()
-        return jsonify({"response": "Record was successfully added"})
+        return jsonify({"response": "success"})
+
+    else:
+        return "sorry, bad token"
+
+
+@circuitflow.route('/update_data')
+def update_data():
+    if request.args.get('token') == circuitflow.config["SECRET_KEY"]:
+        name = request.args.get('name')
+        argument = request.args.get('argument')
+        data = request.args.get('data')
+        data_object = books_data[data]
+        data_object.query.filter(data_object.name == name).first_or_404(
+            description='There is no data with {}'.format(name)
+        )
+        key = data_object.args["attrs"][1]
+        data_object.query.filter(data_object.name == name).update({key: argument})
+        db.session.commit()
+        return jsonify({"response": "success"})
+    else:
+        return "sorry, bad token"
+
 
 if __name__ == '__main__':
     db.create_all()
-    circuitflow.run("127.0.0.1", 4000)
+    circuitflow.run(HOST, PORT, DEBUG)

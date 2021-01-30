@@ -1,11 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
-
+import yaml
+import requests
 
 circuitflow = Flask(__name__)
 circuitflow.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
 circuitflow.config['SECRET_KEY'] = "circuitalminds"
 circuitflow.config["DATABASE_PATH"] = "https://raw.githubusercontent.com/alanmatzumiya/server-admin/main/databases/"
+circuitflow.config["REPOS"] = yaml.load(requests.get(circuitflow.config["DATABASE_PATH"] + "repositories.yml").content, Loader=yaml.FullLoader)
 
 db = SQLAlchemy(circuitflow)
 
@@ -13,14 +15,17 @@ class containers_data(db.Model):
     id = db.Column('file_id', db.Integer, primary_key = True)
     name = db.Column(db.String(100))
     url = db.Column(db.String(100))
-    args = { "attrs": ["name", "url"], 
-    
-            "path_data": [] }
+    args = {
+        "attrs": ["name", "url"],
+        "data": {
+            "container_" + str(j): yaml.load(requests.get(circuitflow.config["DATABASE_PATH"] + "container_" + str(j) + ".yml").content, Loader=yaml.FullLoader) for j in range(1, 11)
+        }
+    }
     
     def __init__(self, data):       
        self.name = data["name"]
        self.url = data["url"]
-      
+
     def __repr__(self):
     
         return '<containers_data %r>' % self.name
@@ -51,10 +56,11 @@ class repos_data(db.Model):
     url = db.Column(db.String(100))
     args = {
         "attrs": ["name", "url"],
-        "path_data": {
-            "container_" + str(j): circuitflow.config["DATABASE_PATH"] + "container_" + str(j) + ".yml" for j in range(1, 11)
+        "data": {
+        key: circuitflow.config["REPOS"][key] for key in list(circuitflow.config["REPOS"].keys())
         }
     }
+    
     
     def __init__(self, data):
        self.name = data["name"]
@@ -83,12 +89,14 @@ class workers(db.Model):
     worker = db.Column(db.String(100))
     job = db.Column(db.String(100))
     argument = db.Column(db.String(100))
-    args = { "attrs": ["worker", "job", "argument"] }
+    status = db.Column(db.String(100))
+    args = { "attrs": ["worker", "job", "argument", "status"] }
     
-    def __init__(self, worker, job, argument):
+    def __init__(self, worker, job, argument, status):
        self.worker = worker
        self.job = job
        self.argument = argument
+       self.status = status
            
     def __repr__(self):
     
