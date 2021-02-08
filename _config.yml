@@ -1,9 +1,3 @@
-SETTINGS:
-  HOST: https://circuitalminds.herokuapp.com/
-  PORT: 80
-  DEBUG: False
-  
-LOCAL_SETTINGS:
-  HOST: 127.0.0.1
-  PORT: 5001
-  DEBUG: True
+HOST: https://circuitflow.herokuapp.com/
+PORT: 80
+DEBUG: False
