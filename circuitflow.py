@@ -229,4 +229,4 @@ def update_data():
 
 if __name__ == '__main__':
     db.create_all()
-    circuitflow.run(HOST, PORT, debug=True)
+    circuitflow.run(HOST, PORT, debug=False)
