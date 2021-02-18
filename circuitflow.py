@@ -3,7 +3,7 @@ import yaml
 from database import workers, music_data, notebooks_data, repos_data, circuitflow, db
 
 books_data = {"music": music_data, "notebooks": notebooks_data, "repositories": repos_data}
-_config = yaml.load(open('./_config.yml'), Loader=yaml.FullLoader)
+_config = yaml.load(open('./manager_config.yml'), Loader=yaml.FullLoader)
 HOST = _config["HOST"]
 PORT = _config["PORT"]
 DEBUG = _config["DEBUG"]
